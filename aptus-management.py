@@ -197,7 +197,6 @@ def aptus_dump_key(key_id):
         web.quit()
         quit(1)
 
-
     # Permissions table
     permissions_table_rows = web.find_elements(by=By.CSS_SELECTOR,
                                    value='div.listTableDiv > table.listTable > tbody > tr')
