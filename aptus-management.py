@@ -121,7 +121,26 @@ def aptus_customer_search_and_open(customer_name):
 # Dump
 #
 
-def aptus_dump_customer_details_row(tr_element, expected_label, row_type='string'):
+
+def aptus_convert_parse_string(td_element, input_type):
+    value_raw = td_element.get_attribute('innerHTML')
+    value_trimmed = value_raw.strip()
+
+    if input_type == 'string':
+        return value_trimmed
+    elif input_type == 'bool':
+        if value_trimmed == 'Ja':
+            return True
+        elif value_trimmed == 'Nej':
+            return False
+        else:
+            raise ValueError(
+                'Unknown value for bool label: {}, expected Ja or Nej'.format(value_trimmed))
+    else:
+        raise ValueError('row_type must be string or bool')
+
+
+def aptus_dump_customer_details_row(tr_element, expected_label, input_type):
     td_elements = tr_element.find_elements(by=By.CSS_SELECTOR, value='td')
 
     if len(td_elements) != 2:
@@ -140,22 +159,7 @@ def aptus_dump_customer_details_row(tr_element, expected_label, row_type='string
         quit(1)
 
     # Value
-    value_td = td_elements[1]
-    value_raw = value_td.get_attribute('innerHTML')
-    value_trimmed = value_raw.strip()
-
-    if row_type == 'string':
-        return value_trimmed
-    elif row_type == 'bool':
-        if value_trimmed == 'Ja':
-            return True
-        elif value_trimmed == 'Nej':
-            return False
-        else:
-            raise ValueError(
-                'Unknown value for bool label {}: {}, expected Ja or Nej'.format(expected_label, value_trimmed))
-    else:
-        raise ValueError('row_type must be string or bool')
+    return aptus_convert_parse_string(td_elements[1], input_type)
 
 
 def aptus_dump_customer_details():
@@ -169,12 +173,12 @@ def aptus_dump_customer_details():
         quit(1)
 
     return {
-        'name': aptus_dump_customer_details_row(details_table_rows[0], 'Name'),
-        'freeText1': aptus_dump_customer_details_row(details_table_rows[1], 'Fritextf_lt_1'),
-        'freeText2': aptus_dump_customer_details_row(details_table_rows[2], 'Fritextf_lt_2'),
-        'freeText3': aptus_dump_customer_details_row(details_table_rows[3], 'Fritextf_lt_3'),
-        'freeText4': aptus_dump_customer_details_row(details_table_rows[4], 'Fritextf_lt_4'),
-        'isCompany': aptus_dump_customer_details_row(details_table_rows[5], 'IsCompany', row_type='bool')
+        'name': aptus_dump_customer_details_row(details_table_rows[0], 'Name', 'string'),
+        'freeText1': aptus_dump_customer_details_row(details_table_rows[1], 'Fritextf_lt_1', 'string'),
+        'freeText2': aptus_dump_customer_details_row(details_table_rows[2], 'Fritextf_lt_2', 'string'),
+        'freeText3': aptus_dump_customer_details_row(details_table_rows[3], 'Fritextf_lt_3', 'string'),
+        'freeText4': aptus_dump_customer_details_row(details_table_rows[4], 'Fritextf_lt_4', 'string'),
+        'isCompany': aptus_dump_customer_details_row(details_table_rows[5], 'IsCompany', 'bool')
     }
 
 
@@ -192,18 +196,45 @@ def aptus_dump_key(key_id):
         web.quit()
         quit(1)
 
+
+    # Permissions table
+    permissions_table_rows = web.find_elements(by=By.CSS_SELECTOR,
+                                   value='div.listTableDiv > table.listTable > tbody > tr')
+
+    # Remove table header
+    permissions_table_rows.pop(0)
+
+    permissions = []
+
+    # Loop over key id's
+    for permission_row in permissions_table_rows:
+        columns = permission_row.find_elements(by=By.CSS_SELECTOR, value='td')
+
+        if len(columns) != 4:
+            logger.error('Error dumping key permission, expected 4 columns in permissions table')
+            web.quit()
+            quit(1)
+
+        permissions.append({
+            'permission': aptus_convert_parse_string(columns[0], 'string'),
+            'start': aptus_convert_parse_string(columns[1], 'string'),
+            'stop': aptus_convert_parse_string(columns[2], 'string'),
+            'blocked': aptus_convert_parse_string(columns[3], 'bool')
+        })
+
     return {
         'id': key_id,
-        'name': aptus_dump_customer_details_row(details_table_rows[0], 'Name'),
-        'cardLabel': aptus_dump_customer_details_row(details_table_rows[1], 'CardLabel'),
-        'card': aptus_dump_customer_details_row(details_table_rows[2], 'Card'),
-        'code': aptus_dump_customer_details_row(details_table_rows[3], 'Code'),
-        'start': aptus_dump_customer_details_row(details_table_rows[4], 'Start'),
-        'stop': aptus_dump_customer_details_row(details_table_rows[5], 'Stop'),
-        'createdTime': aptus_dump_customer_details_row(details_table_rows[6], 'CreatedTime'),
-        'blocked': aptus_dump_customer_details_row(details_table_rows[7], 'Blocked', row_type='bool'),
-        'limitedLogging': aptus_dump_customer_details_row(details_table_rows[8], 'LimitedLogging', row_type='bool'),
-        'freeText1': aptus_dump_customer_details_row(details_table_rows[9], 'Fritextf_lt_1')
+        'name': aptus_dump_customer_details_row(details_table_rows[0], 'Name', 'string'),
+        'cardLabel': aptus_dump_customer_details_row(details_table_rows[1], 'CardLabel', 'string'),
+        'card': aptus_dump_customer_details_row(details_table_rows[2], 'Card', 'string'),
+        'code': aptus_dump_customer_details_row(details_table_rows[3], 'Code', 'string'),
+        'start': aptus_dump_customer_details_row(details_table_rows[4], 'Start', 'string'),
+        'stop': aptus_dump_customer_details_row(details_table_rows[5], 'Stop', 'string'),
+        'createdTime': aptus_dump_customer_details_row(details_table_rows[6], 'CreatedTime', 'string'),
+        'blocked': aptus_dump_customer_details_row(details_table_rows[7], 'Blocked', 'bool'),
+        'limitedLogging': aptus_dump_customer_details_row(details_table_rows[8], 'LimitedLogging', 'bool'),
+        'freeText1': aptus_dump_customer_details_row(details_table_rows[9], 'Fritextf_lt_1', 'string'),
+        'permissions': permissions
     }
 
 
