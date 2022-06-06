@@ -14,6 +14,9 @@ import config
 #
 #
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 sys.setrecursionlimit(100000)
 
 # Initialize browser driver
@@ -40,14 +43,14 @@ def aptus_login():
         try:
             # Verify login worked
             web.find_element(by=By.ID, value='namePart')
-            logging.info("Logged in successfully!")
+            logger.info("Logged in successfully!")
         except NoSuchElementException:
-            logging.error('Error logging in.', )
+            logger.error('Error logging in.', )
             web.quit()
             quit(1)
 
     except NoSuchElementException:
-        logging.error('Error logging in, could not find fields for username and password or login button.', )
+        logger.error('Error logging in, could not find fields for username and password or login button.', )
         web.quit()
         quit(1)
 
@@ -64,7 +67,7 @@ def aptus_search(search_string):
         return web.find_element(by=By.CSS_SELECTOR, value='table.searchResultTable')
 
     except NoSuchElementException:
-        logging.error('Error while performing search')
+        logger.error('Error while performing search')
         web.quit()
         quit(1)
 
@@ -75,7 +78,7 @@ def aptus_fitler_search_result(element, expected_name, expected_url_match):
         name_elements = element.find_elements(by=By.CSS_SELECTOR, value='td.firstResultColumn')
 
         if len(name_elements) is not 1:
-            logging.error('Unexpected number of name elements in search result row')
+            logger.error('Unexpected number of name elements in search result row')
             web.quit()
             quit(1)
 
@@ -88,7 +91,7 @@ def aptus_fitler_search_result(element, expected_name, expected_url_match):
         return expected_url_match in element.get_attribute('onclick')
 
     except NoSuchElementException:
-        logging.error('Error while parsing search box')
+        logger.error('Error while parsing search box')
         web.quit()
         quit(1)
 
@@ -105,9 +108,9 @@ def aptus_customer_search_and_open(customer_name):
         filter(lambda e: aptus_fitler_search_result(e, customer_name, '/Customer/Details/'), clickable_results))
 
     if len(customer_results) == 0:
-        logging.error('Could not find customer with name: {}'.format(customer_name))
+        logger.error('Could not find customer with name: {}'.format(customer_name))
     elif len(customer_results) != 1:
-        logging.error('Found more than one customer with name: {}'.format(customer_name))
+        logger.error('Found more than one customer with name: {}'.format(customer_name))
 
     # Open customer
     customer_results[0].click()
