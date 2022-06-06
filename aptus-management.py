@@ -2,13 +2,14 @@
 
 import json
 import logging
+import re
 import sys
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-import re
+
 import config
 
 #
