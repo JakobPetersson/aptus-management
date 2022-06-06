@@ -8,7 +8,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-
+import re
 import config
 
 #
@@ -178,6 +178,36 @@ def aptus_dump_customer_details():
     }
 
 
+def aptus_dump_key(key_id):
+    return {
+        'id': key_id
+    }
+
+
+def aptus_dump_customer_keys(customer_id):
+    # Open url directly to customer page
+    customer_url = '{base}/CustomerKeys/Index/{id}'.format(base=config.APTUS_BASE_URL, id=customer_id)
+    web.get(customer_url)
+
+    # Keys table
+    table_rows = web.find_elements(by=By.CSS_SELECTOR,
+                                   value='div.listTableDiv > table.listTable > tbody > tr')
+
+    onclick_attributes = list(map(lambda row: row.get_attribute('onclick'), table_rows))
+    key_onclick_urls = list(filter(lambda a: a is not None and '/CustomerKeys/Details/' in a, onclick_attributes))
+    key_ids = list(map(lambda a: re.search(r"document\.location\.href=\'.+/CustomerKeys/Details/(\d+)\'", a).group(1),
+                       key_onclick_urls))
+
+    keys = []
+
+    # Loop over key id's
+    for key_id in key_ids:
+        key = aptus_dump_key(key_id)
+        keys.append(key)
+
+    return keys
+
+
 def aptus_dump_customer(customer_id):
     # Open url directly to customer page
     customer_url = '{base}/Customer/Details/{id}'.format(base=config.APTUS_BASE_URL, id=customer_id)
@@ -195,7 +225,8 @@ def aptus_dump_customer(customer_id):
 
     customer = {
         'id': customer_id,
-        'details': aptus_dump_customer_details()
+        'details': aptus_dump_customer_details(),
+        'keys': aptus_dump_customer_keys(customer_id)
     }
 
     return customer
