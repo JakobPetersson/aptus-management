@@ -134,7 +134,8 @@ def aptus_dump_customer_details_row(tr_element, expected_label, row_type='string
     actual_label = label_td.find_element(by=By.CSS_SELECTOR, value='label').get_attribute('for')
 
     if actual_label != expected_label:
-        logger.error('Error dumping customer details row, expected label {}, got label {}'.format(expected_label, actual_label))
+        logger.error(
+            'Error dumping customer details row, expected label {}, got label {}'.format(expected_label, actual_label))
         web.quit()
         quit(1)
 
@@ -151,7 +152,8 @@ def aptus_dump_customer_details_row(tr_element, expected_label, row_type='string
         elif value_trimmed == 'Nej':
             return False
         else:
-            raise ValueError('Unknown value for bool label {}: {}, expected Ja or Nej'.format(expected_label, value_trimmed))
+            raise ValueError(
+                'Unknown value for bool label {}: {}, expected Ja or Nej'.format(expected_label, value_trimmed))
     else:
         raise ValueError('row_type must be string or bool')
 
