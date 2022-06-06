@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import json
 import logging
 import sys
 
@@ -116,4 +117,102 @@ def aptus_customer_search_and_open(customer_name):
     customer_results[0].click()
 
 
+#
+# Dump
+#
+
+def aptus_dump_customer_details_row(tr_element, expected_label, row_type='string'):
+    td_elements = tr_element.find_elements(by=By.CSS_SELECTOR, value='td')
+
+    if len(td_elements) != 2:
+        logger.error('Error dumping customer details row, expected 2 td elements in tr')
+        web.quit()
+        quit(1)
+
+    # Label
+    label_td = td_elements[0]
+    actual_label = label_td.find_element(by=By.CSS_SELECTOR, value='label').get_attribute('for')
+
+    if actual_label != expected_label:
+        logger.error('Error dumping customer details row, expected label {}, got label {}'.format(expected_label, actual_label))
+        web.quit()
+        quit(1)
+
+    # Value
+    value_td = td_elements[1]
+    value_raw = value_td.get_attribute('innerHTML')
+    value_trimmed = value_raw.strip()
+
+    if row_type == 'string':
+        return value_trimmed
+    elif row_type == 'bool':
+        if value_trimmed == 'Ja':
+            return True
+        elif value_trimmed == 'Nej':
+            return False
+        else:
+            raise ValueError('Unknown value for bool label {}: {}, expected Ja or Nej'.format(expected_label, value_trimmed))
+    else:
+        raise ValueError('row_type must be string or bool')
+
+
+def aptus_dump_customer(customer_id):
+    # Open url directly to customer page
+    customer_url = '{base}/Customer/Details/{id}'.format(base=config.APTUS_BASE_URL, id=customer_id)
+    web.get(customer_url)
+
+    if web.current_url != customer_url:
+        # Customer does not exist if we have been redirected to other page
+        logger.info('Customer ID: {} does not exist'.format(customer_id))
+        # Return None to signify no data
+        return None
+
+    logger.info('Customer ID: {} exist'.format(customer_id))
+
+    # Gather customer data
+
+    # Details table
+    details_table_rows = web.find_elements(by=By.CSS_SELECTOR,
+                                           value='div.detailsTableDiv > table.detailsTable > tbody > tr')
+
+    if len(details_table_rows) != 6:
+        logger.error('Error dumping customer, expected 6 rows in details table')
+        web.quit()
+        quit(1)
+
+    customer = {
+        'id': customer_id,
+        'details': {
+            'name': aptus_dump_customer_details_row(details_table_rows[0], 'Name'),
+            'free-text-1': aptus_dump_customer_details_row(details_table_rows[1], 'Fritextf_lt_1'),
+            'free-text-2': aptus_dump_customer_details_row(details_table_rows[2], 'Fritextf_lt_2'),
+            'free-text-3': aptus_dump_customer_details_row(details_table_rows[3], 'Fritextf_lt_3'),
+            'free-text-4': aptus_dump_customer_details_row(details_table_rows[4], 'Fritextf_lt_4'),
+            'business-customer': aptus_dump_customer_details_row(details_table_rows[5], 'IsCompany', row_type='bool')
+        }
+    }
+
+    return customer
+
+
+def aptus_dump_all_customers():
+    customers = []
+
+    # Loop over customer id's
+    for customer_id in range(0, 5):
+        customer = aptus_dump_customer(customer_id)
+        if customer is not None:
+            customers.append(customer)
+
+    with open('customer_dump.json', 'w', encoding='utf-8') as outfile:
+        json_string = json.dumps(customers, indent=2, ensure_ascii=False)
+        outfile.write(json_string)
+
+
+#
+#
+#
+
+
 aptus_login()
+aptus_dump_all_customers()
