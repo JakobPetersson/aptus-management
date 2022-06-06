@@ -179,13 +179,36 @@ def aptus_dump_customer_details():
 
 
 def aptus_dump_key(key_id):
+    # Open url directly to key details page
+    key_url = '{base}/CustomerKeys/Details/{id}'.format(base=config.APTUS_BASE_URL, id=key_id)
+    web.get(key_url)
+
+    # Details table
+    details_table_rows = web.find_elements(by=By.CSS_SELECTOR,
+                                           value='div.detailsTableDiv > table.detailsTable > tbody > tr')
+
+    if len(details_table_rows) != 10:
+        logger.error('Error dumping key, expected 10 rows in details table')
+        web.quit()
+        quit(1)
+
     return {
-        'id': key_id
+        'id': key_id,
+        'name': aptus_dump_customer_details_row(details_table_rows[0], 'Name'),
+        'cardLabel': aptus_dump_customer_details_row(details_table_rows[1], 'CardLabel'),
+        'card': aptus_dump_customer_details_row(details_table_rows[2], 'Card'),
+        'code': aptus_dump_customer_details_row(details_table_rows[3], 'Code'),
+        'start': aptus_dump_customer_details_row(details_table_rows[4], 'Start'),
+        'stop': aptus_dump_customer_details_row(details_table_rows[5], 'Stop'),
+        'createdTime': aptus_dump_customer_details_row(details_table_rows[6], 'CreatedTime'),
+        'blocked': aptus_dump_customer_details_row(details_table_rows[7], 'Blocked', row_type='bool'),
+        'limitedLogging': aptus_dump_customer_details_row(details_table_rows[8], 'LimitedLogging', row_type='bool'),
+        'freeText1': aptus_dump_customer_details_row(details_table_rows[9], 'Fritextf_lt_1')
     }
 
 
 def aptus_dump_customer_keys(customer_id):
-    # Open url directly to customer page
+    # Open url directly to customer details page
     customer_url = '{base}/CustomerKeys/Index/{id}'.format(base=config.APTUS_BASE_URL, id=customer_id)
     web.get(customer_url)
 
