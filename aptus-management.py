@@ -170,11 +170,11 @@ def aptus_dump_customer_details():
 
     return {
         'name': aptus_dump_customer_details_row(details_table_rows[0], 'Name'),
-        'free-text-1': aptus_dump_customer_details_row(details_table_rows[1], 'Fritextf_lt_1'),
-        'free-text-2': aptus_dump_customer_details_row(details_table_rows[2], 'Fritextf_lt_2'),
-        'free-text-3': aptus_dump_customer_details_row(details_table_rows[3], 'Fritextf_lt_3'),
-        'free-text-4': aptus_dump_customer_details_row(details_table_rows[4], 'Fritextf_lt_4'),
-        'business-customer': aptus_dump_customer_details_row(details_table_rows[5], 'IsCompany', row_type='bool')
+        'freeText1': aptus_dump_customer_details_row(details_table_rows[1], 'Fritextf_lt_1'),
+        'freeText2': aptus_dump_customer_details_row(details_table_rows[2], 'Fritextf_lt_2'),
+        'freeText3': aptus_dump_customer_details_row(details_table_rows[3], 'Fritextf_lt_3'),
+        'freeText4': aptus_dump_customer_details_row(details_table_rows[4], 'Fritextf_lt_4'),
+        'isCompany': aptus_dump_customer_details_row(details_table_rows[5], 'IsCompany', row_type='bool')
     }
 
 
