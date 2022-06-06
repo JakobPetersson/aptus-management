@@ -254,6 +254,8 @@ def aptus_dump_customer_keys(customer_id):
 
     keys = []
 
+    print('Keys: {}'.format(len(key_ids)))
+
     # Loop over key id's
     for key_id in key_ids:
         key = aptus_dump_key(key_id)
@@ -273,7 +275,7 @@ def aptus_dump_customer(customer_id):
         # Return None to signify no data
         return None
 
-    logger.info('Customer ID: {} exist'.format(customer_id))
+    print('Customer ID: {}'.format(customer_id))
 
     # Gather customer data
 
@@ -290,7 +292,7 @@ def aptus_dump_all_customers():
     customers = []
 
     # Loop over customer id's
-    for customer_id in range(0, 5):
+    for customer_id in range(0, 1000):
         customer = aptus_dump_customer(customer_id)
         if customer is not None:
             customers.append(customer)
