@@ -156,6 +156,26 @@ def aptus_dump_customer_details_row(tr_element, expected_label, row_type='string
         raise ValueError('row_type must be string or bool')
 
 
+def aptus_dump_customer_details():
+    # Details table
+    details_table_rows = web.find_elements(by=By.CSS_SELECTOR,
+                                           value='div.detailsTableDiv > table.detailsTable > tbody > tr')
+
+    if len(details_table_rows) != 6:
+        logger.error('Error dumping customer, expected 6 rows in details table')
+        web.quit()
+        quit(1)
+
+    return {
+        'name': aptus_dump_customer_details_row(details_table_rows[0], 'Name'),
+        'free-text-1': aptus_dump_customer_details_row(details_table_rows[1], 'Fritextf_lt_1'),
+        'free-text-2': aptus_dump_customer_details_row(details_table_rows[2], 'Fritextf_lt_2'),
+        'free-text-3': aptus_dump_customer_details_row(details_table_rows[3], 'Fritextf_lt_3'),
+        'free-text-4': aptus_dump_customer_details_row(details_table_rows[4], 'Fritextf_lt_4'),
+        'business-customer': aptus_dump_customer_details_row(details_table_rows[5], 'IsCompany', row_type='bool')
+    }
+
+
 def aptus_dump_customer(customer_id):
     # Open url directly to customer page
     customer_url = '{base}/Customer/Details/{id}'.format(base=config.APTUS_BASE_URL, id=customer_id)
@@ -171,25 +191,9 @@ def aptus_dump_customer(customer_id):
 
     # Gather customer data
 
-    # Details table
-    details_table_rows = web.find_elements(by=By.CSS_SELECTOR,
-                                           value='div.detailsTableDiv > table.detailsTable > tbody > tr')
-
-    if len(details_table_rows) != 6:
-        logger.error('Error dumping customer, expected 6 rows in details table')
-        web.quit()
-        quit(1)
-
     customer = {
         'id': customer_id,
-        'details': {
-            'name': aptus_dump_customer_details_row(details_table_rows[0], 'Name'),
-            'free-text-1': aptus_dump_customer_details_row(details_table_rows[1], 'Fritextf_lt_1'),
-            'free-text-2': aptus_dump_customer_details_row(details_table_rows[2], 'Fritextf_lt_2'),
-            'free-text-3': aptus_dump_customer_details_row(details_table_rows[3], 'Fritextf_lt_3'),
-            'free-text-4': aptus_dump_customer_details_row(details_table_rows[4], 'Fritextf_lt_4'),
-            'business-customer': aptus_dump_customer_details_row(details_table_rows[5], 'IsCompany', row_type='bool')
-        }
+        'details': aptus_dump_customer_details()
     }
 
     return customer
