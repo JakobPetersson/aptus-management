@@ -199,7 +199,7 @@ def aptus_dump_key(key_id):
 
     # Permissions table
     permissions_table_rows = web.find_elements(by=By.CSS_SELECTOR,
-                                   value='div.listTableDiv > table.listTable > tbody > tr')
+                                               value='div.listTableDiv > table.listTable > tbody > tr')
 
     # Remove table header
     permissions_table_rows.pop(0)
@@ -302,8 +302,9 @@ def aptus_dump_customer_contracts(customer_id):
 
     onclick_attributes = list(map(lambda row: row.get_attribute('onclick'), table_rows))
     key_onclick_urls = list(filter(lambda a: a is not None and '/CustomerContract/Details/' in a, onclick_attributes))
-    contract_ids = list(map(lambda a: re.search(r"document\.location\.href=\'.+/CustomerContract/Details/(\d+)\'", a).group(1),
-                       key_onclick_urls))
+    contract_ids = list(
+        map(lambda a: re.search(r"document\.location\.href=\'.+/CustomerContract/Details/(\d+)\'", a).group(1),
+            key_onclick_urls))
 
     contracts = []
 
