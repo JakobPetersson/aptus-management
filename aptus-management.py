@@ -296,7 +296,7 @@ def aptus_dump_customer_contracts(customer_id):
     customer_url = '{base}/CustomerContract/Index/{id}'.format(base=config.APTUS_BASE_URL, id=customer_id)
     web.get(customer_url)
 
-    # Keys table
+    # Contracts table
     table_rows = web.find_elements(by=By.CSS_SELECTOR,
                                    value='div.listTableDiv > table.listTable > tbody > tr')
 
