@@ -328,7 +328,7 @@ def aptus_dump_customer_entry_phone(customer_id):
 
     if web.current_url == customer_entry_phone_index_url:
         # Customer does not have entry phone if we are still at the index page
-        logger.info('Customer ID: {} does not have entry phone'.format(customer_id))
+        print('Does not have entry phone')
         # Return None to signify no data
         return None
 
