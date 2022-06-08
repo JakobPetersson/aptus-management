@@ -258,8 +258,7 @@ def aptus_dump_customer_keys(customer_id):
 
     # Loop over key id's
     for key_id in key_ids:
-        key = aptus_dump_key(key_id)
-        keys.append(key)
+        keys.append(aptus_dump_key(key_id))
 
     return keys
 
