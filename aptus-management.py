@@ -264,6 +264,59 @@ def aptus_dump_customer_keys(customer_id):
     return keys
 
 
+def aptus_dump_contract(contract_id):
+    # Open url directly to contract details page
+    contract_url = '{base}/CustomerContract/Details/{id}'.format(base=config.APTUS_BASE_URL, id=contract_id)
+    web.get(contract_url)
+
+    # Details table
+    details_table_rows = web.find_elements(by=By.CSS_SELECTOR,
+                                           value='div.detailsTableDiv > table.detailsTable > tbody > tr')
+
+    if len(details_table_rows) != 8:
+        logger.error('Error dumping contract, expected 8 rows in details table')
+        web.quit()
+        quit(1)
+
+    return {
+        'id': contract_id,
+        'startDate': aptus_dump_customer_details_row(details_table_rows[0], 'StartDate', 'string'),
+        'endDate': aptus_dump_customer_details_row(details_table_rows[1], 'EndDate', 'string'),
+        'objectName': aptus_dump_customer_details_row(details_table_rows[2], 'ObjectName', 'string'),
+        'entryPhoneCallCode': aptus_dump_customer_details_row(details_table_rows[3], 'EntryPhoneCallCode', 'string'),
+        'floor': aptus_dump_customer_details_row(details_table_rows[4], 'Floor', 'string'),
+        'floorText': aptus_dump_customer_details_row(details_table_rows[5], 'FloorText', 'string'),
+        'apartmentNo': aptus_dump_customer_details_row(details_table_rows[6], 'ApartmentNo', 'string'),
+        'addressName': aptus_dump_customer_details_row(details_table_rows[7], 'AddressName', 'string')
+    }
+
+
+def aptus_dump_customer_contracts(customer_id):
+    # Open url directly to customer contracts page
+    customer_url = '{base}/CustomerContract/Index/{id}'.format(base=config.APTUS_BASE_URL, id=customer_id)
+    web.get(customer_url)
+
+    # Keys table
+    table_rows = web.find_elements(by=By.CSS_SELECTOR,
+                                   value='div.listTableDiv > table.listTable > tbody > tr')
+
+    onclick_attributes = list(map(lambda row: row.get_attribute('onclick'), table_rows))
+    key_onclick_urls = list(filter(lambda a: a is not None and '/CustomerContract/Details/' in a, onclick_attributes))
+    contract_ids = list(map(lambda a: re.search(r"document\.location\.href=\'.+/CustomerContract/Details/(\d+)\'", a).group(1),
+                       key_onclick_urls))
+
+    contracts = []
+
+    print('Contracts: {}'.format(len(contract_ids)))
+
+    # Loop over key id's
+    for contract_id in contract_ids:
+        contract = aptus_dump_contract(contract_id)
+        contracts.append(contract)
+
+    return contracts
+
+
 def aptus_dump_customer(customer_id):
     # Open url directly to customer page
     customer_url = '{base}/Customer/Details/{id}'.format(base=config.APTUS_BASE_URL, id=customer_id)
@@ -282,7 +335,8 @@ def aptus_dump_customer(customer_id):
     customer = {
         'id': customer_id,
         'details': aptus_dump_customer_details(),
-        'keys': aptus_dump_customer_keys(customer_id)
+        'keys': aptus_dump_customer_keys(customer_id),
+        'contracts': aptus_dump_customer_contracts(customer_id)
     }
 
     return customer
