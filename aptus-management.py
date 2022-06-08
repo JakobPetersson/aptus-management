@@ -313,8 +313,7 @@ def aptus_dump_customer_contracts(customer_id):
 
     # Loop over key id's
     for contract_id in contract_ids:
-        contract = aptus_dump_contract(contract_id)
-        contracts.append(contract)
+        contracts.append(aptus_dump_contract(contract_id))
 
     return contracts
 
