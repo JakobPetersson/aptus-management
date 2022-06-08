@@ -318,6 +318,73 @@ def aptus_dump_customer_contracts(customer_id):
     return contracts
 
 
+def aptus_dump_customer_entry_phone(customer_id):
+    # Open url directly to entry phone index page
+    customer_entry_phone_index_url = '{base}/CustomerEntryPhone/Index/{id}'.format(base=config.APTUS_BASE_URL,
+                                                                                   id=customer_id)
+    web.get(customer_entry_phone_index_url)
+
+    if web.current_url == customer_entry_phone_index_url:
+        # Customer does not have entry phone if we are still at the index page
+        logger.info('Customer ID: {} does not have entry phone'.format(customer_id))
+        # Return None to signify no data
+        return None
+
+    # Get entry phone id
+    entry_phone_id = re.search(r".+/CustomerEntryPhone/Details/(\d+)", web.current_url).group(1)
+
+    print('Entry phone ID: {}'.format(entry_phone_id))
+
+    # Entry phone names table
+    entry_phone_name_rows = web.find_elements(by=By.CSS_SELECTOR,
+                                               value='div.listTableDiv > table.listTable > tbody > tr')
+
+    # Remove table header
+    entry_phone_name_rows.pop(0)
+
+    entry_phone_names = []
+
+    # Loop over key id's
+    for entry_phone_name_row in entry_phone_name_rows:
+        columns = entry_phone_name_row.find_elements(by=By.CSS_SELECTOR, value='td')
+
+        if len(columns) != 5:
+            logger.error('Error dumping entry phone name, expected 4 columns in list table')
+            web.quit()
+            quit(1)
+
+        entry_phone_names.append({
+            'firstName': aptus_convert_parse_string(columns[0], 'string'),
+            'surname': aptus_convert_parse_string(columns[1], 'string'),
+            'phoneNumber': aptus_convert_parse_string(columns[2], 'string'),
+            'callCode': aptus_convert_parse_string(columns[3], 'string'),
+            'show': aptus_convert_parse_string(columns[4], 'bool')
+        })
+
+    # Details table
+    details_table_rows = web.find_elements(by=By.CSS_SELECTOR,
+                                           value='div.detailsTableDiv > table.detailsTable > tbody > tr')
+
+    if len(details_table_rows) != 8:
+        logger.error('Error dumping entry phone, expected 8 rows in details table')
+        web.quit()
+        quit(1)
+
+    return {
+        'id': entry_phone_id,
+        'objectName': aptus_dump_customer_details_row(details_table_rows[0], 'ObjectName', 'string'),
+        'phoneNumber': aptus_dump_customer_details_row(details_table_rows[1], 'PhoneNumber', 'string'),
+        'firstName1': aptus_dump_customer_details_row(details_table_rows[2], 'FirstName1', 'string'),
+        'surname1': aptus_dump_customer_details_row(details_table_rows[3], 'Surname1', 'string'),
+        'firstName2': aptus_dump_customer_details_row(details_table_rows[4], 'FirstName2', 'string'),
+        'surname2': aptus_dump_customer_details_row(details_table_rows[5], 'Surname2', 'string'),
+        'showInEntryPhoneDisplay': aptus_dump_customer_details_row(details_table_rows[6], 'ShowInEntryPhoneDisplay',
+                                                                   'bool'),
+        'apartmentPhonePresent': aptus_dump_customer_details_row(details_table_rows[7], 'ApartmentPhonePresent', 'bool'),
+        'entryPhoneNames': entry_phone_names
+    }
+
+
 def aptus_dump_customer(customer_id):
     # Open url directly to customer page
     customer_url = '{base}/Customer/Details/{id}'.format(base=config.APTUS_BASE_URL, id=customer_id)
@@ -337,7 +404,8 @@ def aptus_dump_customer(customer_id):
         'id': customer_id,
         'details': aptus_dump_customer_details(),
         'keys': aptus_dump_customer_keys(customer_id),
-        'contracts': aptus_dump_customer_contracts(customer_id)
+        'contracts': aptus_dump_customer_contracts(customer_id),
+        'entryPhone': aptus_dump_customer_entry_phone(customer_id)
     }
 
     return customer
