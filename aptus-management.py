@@ -417,7 +417,7 @@ def aptus_dump_all_customers():
     customers = []
 
     # Loop over customer id's
-    for customer_id in range(0, 1000):
+    for customer_id in range(0, 600):
         customer = aptus_dump_customer(customer_id)
         if customer is not None:
             customers.append(customer)
