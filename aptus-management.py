@@ -240,8 +240,8 @@ def aptus_dump_key(key_id):
 
 def aptus_dump_customer_keys(customer_id):
     # Open url directly to customer keys page
-    customer_url = '{base}/CustomerKeys/Index/{id}'.format(base=config.APTUS_BASE_URL, id=customer_id)
-    web.get(customer_url)
+    customer_keys_url = '{base}/CustomerKeys/Index/{id}'.format(base=config.APTUS_BASE_URL, id=customer_id)
+    web.get(customer_keys_url)
 
     # Keys table
     table_rows = web.find_elements(by=By.CSS_SELECTOR,
