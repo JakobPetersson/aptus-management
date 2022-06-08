@@ -279,6 +279,8 @@ def aptus_dump_contract(contract_id):
         web.quit()
         quit(1)
 
+    print('Contract ID: {}'.format(contract_id))
+
     return {
         'id': contract_id,
         'startDate': aptus_dump_customer_details_row(details_table_rows[0], 'StartDate', 'string'),
