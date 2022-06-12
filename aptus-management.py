@@ -492,3 +492,4 @@ def aptus_dump_all_authorities():
 aptus_login()
 aptus_dump_all_authorities()
 aptus_dump_all_customers()
+web.quit()
