@@ -428,10 +428,67 @@ def aptus_dump_all_customers():
         outfile.write(json_string)
 
 
+def aptus_dump_authority(authority_id, authority_name):
+    # Open authority details page
+    authority_details_url = '{base}/Authority/Details/{id}'.format(base=config.APTUS_BASE_URL, id=authority_id)
+    web.get(authority_details_url)
+
+    # Permissions table
+    td_elements = web.find_elements(by=By.CSS_SELECTOR,
+                                    value='div.listTableDiv > div > table.listTable > tbody > tr > td')
+
+    timezones = list(map(lambda td_element: td_element.get_attribute('innerHTML').strip(), td_elements))
+
+    print('Authority {}, {}, {} timezones'.format(authority_id, authority_name, len(timezones)))
+
+    return {
+        'id': authority_id,
+        'name': authority_name,
+        'timezones': timezones
+    }
+
+
+def aptus_dump_all_authorities():
+    # Open url directly to authority index page
+    authority_index_url = '{base}/Authority/Index'.format(base=config.APTUS_BASE_URL)
+    web.get(authority_index_url)
+
+    # Authority table
+    tr_elements = web.find_elements(by=By.CSS_SELECTOR,
+                                    value='div.listTableDiv > table.listTable > tbody > tr')
+
+    row_datas = list(map(lambda tr_element: {
+        'tr': tr_element,
+        'onclick': tr_element.get_attribute('onclick')
+    }, tr_elements))
+
+    row_datas = list(
+        filter(lambda row: row.get('onclick') is not None and '/Authority/Details/' in row.get('onclick'), row_datas))
+
+    row_datas = list(
+        map(lambda row: {
+            'id': re.search(r"document\.location\.href=\'.+/Authority/Details/(\d+)\'", row.get('onclick')).group(1),
+            'name': row.get('tr').find_element(by=By.CSS_SELECTOR, value='td').get_attribute('innerHTML').strip()
+        }, row_datas))
+
+    print('Authorities: {}'.format(len(row_datas)))
+
+    authorities = []
+
+    # Loop over authority id's
+    for authority_data in row_datas:
+        authorities.append(aptus_dump_authority(authority_data.get('id'), authority_data.get('name')))
+
+    with open('authorities_dump.json', 'w', encoding='utf-8') as outfile:
+        json_string = json.dumps(authorities, indent=2, ensure_ascii=False)
+        outfile.write(json_string)
+
+
 #
 #
 #
 
 
 aptus_login()
+aptus_dump_all_authorities()
 aptus_dump_all_customers()
