@@ -339,7 +339,7 @@ def aptus_dump_customer_entry_phone(customer_id):
 
     # Entry phone names table
     entry_phone_name_rows = web.find_elements(by=By.CSS_SELECTOR,
-                                               value='div.listTableDiv > table.listTable > tbody > tr')
+                                              value='div.listTableDiv > table.listTable > tbody > tr')
 
     # Remove table header
     entry_phone_name_rows.pop(0)
@@ -382,7 +382,8 @@ def aptus_dump_customer_entry_phone(customer_id):
         'surname2': aptus_dump_customer_details_row(details_table_rows[5], 'Surname2', 'string'),
         'showInEntryPhoneDisplay': aptus_dump_customer_details_row(details_table_rows[6], 'ShowInEntryPhoneDisplay',
                                                                    'bool'),
-        'apartmentPhonePresent': aptus_dump_customer_details_row(details_table_rows[7], 'ApartmentPhonePresent', 'bool'),
+        'apartmentPhonePresent': aptus_dump_customer_details_row(details_table_rows[7], 'ApartmentPhonePresent',
+                                                                 'bool'),
         'entryPhoneNames': entry_phone_names
     }
 
