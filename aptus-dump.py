@@ -388,6 +388,40 @@ def aptus_dump_customer_entry_phone(customer_id):
     }
 
 
+def aptus_dump_customer_notes(customer_id):
+    # Open url directly to customer note index page
+    customer_note_index_url = '{base}/CustomerNote/Index/{id}'.format(base=config.APTUS_BASE_URL, id=customer_id)
+    web.get(customer_note_index_url)
+
+    # Notes list
+    notes_table_rows = web.find_elements(by=By.CSS_SELECTOR,
+                                         value='div.listTableDiv > table.listTable > tbody > tr')
+
+    # Remove table header
+    notes_table_rows.pop(0)
+
+    notes = []
+
+    print('Notes: {}'.format(len(notes_table_rows)))
+
+    # Loop over note table rows
+    for permission_row in notes_table_rows:
+        columns = permission_row.find_elements(by=By.CSS_SELECTOR, value='td')
+
+        if len(columns) != 4:
+            logger.error('Error dumping customer note, expected 4 columns in customer note table')
+            web.quit()
+            quit(1)
+
+        notes.append({
+            'note': aptus_convert_parse_string(columns[0], 'string'),
+            'createdTime': aptus_convert_parse_string(columns[1], 'string'),
+            'operator': aptus_convert_parse_string(columns[2], 'string')
+        })
+
+    return notes
+
+
 def aptus_dump_customer(customer_id):
     # Open url directly to customer page
     customer_url = '{base}/Customer/Details/{id}'.format(base=config.APTUS_BASE_URL, id=customer_id)
@@ -408,7 +442,8 @@ def aptus_dump_customer(customer_id):
         'details': aptus_dump_customer_details(),
         'keys': aptus_dump_customer_keys(customer_id),
         'contracts': aptus_dump_customer_contracts(customer_id),
-        'entryPhone': aptus_dump_customer_entry_phone(customer_id)
+        'entryPhone': aptus_dump_customer_entry_phone(customer_id),
+        'notes': aptus_dump_customer_notes(customer_id)
     }
 
     return customer
