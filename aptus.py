@@ -426,6 +426,9 @@ class Aptus:
 
         return notes
 
+    def update_keys(self, keys):
+        pass
+
     def quit(self):
         self.web.quit()
 
