@@ -433,8 +433,51 @@ class Aptus:
 
         return notes
 
-    def update_keys(self, keys):
-        pass
+    def get_details_table_row_forName(self, name):
+        # Details table
+        details_table_rows = self.web.find_elements(by=By.CSS_SELECTOR,
+                                                    value='div.detailsTableDiv > table.detailsTable > tbody > tr')
+
+        # Filter out tr element
+        filtered_rows = list(filter(lambda row: row.find_element(by=By.CSS_SELECTOR, value='td > label').get_attribute('for') == name, details_table_rows))
+
+        if len(filtered_rows) != 1:
+            raise Exception('Could not find expected field in details table')
+
+        return filtered_rows[0]
+
+    def update_key(self, key_data: dict):
+        key_id = key_data.get('id')
+        # Open url to key edit page
+        self.open_path('CustomerKeys/Edit/{id}'.format(id=key_id))
+
+        print('Updating key: {}'.format(key_id))
+
+        # Update code
+        code_key = 'code'
+        if code_key in key_data:
+            code_tr = self.get_details_table_row_forName('Code')
+            code_input = code_tr.find_element(by=By.CSS_SELECTOR, value='input')
+
+            # Update code
+            new_code = key_data.get(code_key)
+            code_input.clear()
+            code_input.send_keys(new_code)
+
+            print('Updating code to: {}'.format(new_code))
+
+        # Save
+        save_button = self.web.find_element(by=By.ID, value='theSubmitButton')
+        save_button.click()
+
+        # Wait for OK
+        self.web.find_element(by=By.CSS_SELECTOR, value='div.message > div.messageOk')
+
+        print('Saved successfully!')
+
+    def update_keys(self, key_datas: list):
+        for key_data in key_datas:
+            self.update_key(key_data)
 
     def quit(self):
         self.web.quit()
