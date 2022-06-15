@@ -78,7 +78,7 @@ if args.action == 'keys':
         print('Provided files does not exist!')
         quit()
 
-    with open('keys.json', 'r', encoding='utf-8') as infile:
+    with open(key_file_path, 'r', encoding='utf-8') as infile:
         keys = json.load(infile)
 
         if not query_yes_no('Are you sure you want to update {} keys?'.format(len(keys))):
