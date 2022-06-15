@@ -453,6 +453,8 @@ class Aptus:
 
         print('Updating key: {}'.format(key_id))
 
+        has_changed = False
+
         # Update code
         code_key = 'code'
         if code_key in key_data:
@@ -460,20 +462,25 @@ class Aptus:
             code_input = code_tr.find_element(by=By.CSS_SELECTOR, value='input')
 
             # Update code
+            old_code = code_input.get_attribute('value')
             new_code = key_data.get(code_key)
-            code_input.clear()
-            code_input.send_keys(new_code)
 
-            print('Updating code to: {}'.format(new_code))
+            if new_code != old_code:
+                has_changed = True
+                code_input.clear()
+                code_input.send_keys(new_code)
+                print('Updating code from: {} to: {}'.format(old_code, new_code))
 
         # Save
-        save_button = self.web.find_element(by=By.ID, value='theSubmitButton')
-        save_button.click()
+        if has_changed:
+            save_button = self.web.find_element(by=By.ID, value='theSubmitButton')
+            save_button.click()
 
-        # Wait for OK
-        self.web.find_element(by=By.CSS_SELECTOR, value='div.message > div.messageOk')
-
-        print('Saved successfully!')
+            # Wait for OK
+            self.web.find_element(by=By.CSS_SELECTOR, value='div.message > div.messageOk')
+            print('Saved successfully!')
+        else:
+            print('No changes!')
 
     def update_keys(self, key_datas: list):
         for key_data in key_datas:
