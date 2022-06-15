@@ -69,6 +69,13 @@ class Aptus:
             if not current_url.startswith(login_redirect_url):
                 # If not redirected to login page again
                 print('- Logged in')
+
+                # Open url again after login since some pages are not reditected to correctly
+                self.web.get(self._build_url(path))
+
+                # Get current url after potential redirects etc.
+                current_url = self.web.current_url
+
                 return current_url
 
     def dump_all_authorities(self):
