@@ -78,8 +78,20 @@ If your Linux doesn't have Chomedriver in apt, go to [chromedriver.storage.googl
 
 `sudo ln -s /usr/local/share/chromedriver /usr/bin/chromedriver`
 
-# Run the damn thing
+# Aptus Dump
+
+Dump all authorities and customers.
+
+Creates the following files:
+* `authorities_dump.json`
+* `customer_dump.json`
 
 ```shell
-./aptus-management.py
+./aptus-dump.py
+```
+
+# Aptus Manage
+
+```shell
+./aptus-manage.py
 ```
