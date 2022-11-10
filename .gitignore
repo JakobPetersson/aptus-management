@@ -1,4 +1,3 @@
 .idea
 config.py
-authorities_dump.json
-customer_dump.json
+dumps

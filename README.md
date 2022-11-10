@@ -83,8 +83,8 @@ If your Linux doesn't have Chomedriver in apt, go to [chromedriver.storage.googl
 Dump all authorities and customers.
 
 Creates the following files:
-* `authorities_dump.json`
-* `customer_dump.json`
+* `./dumps/<YYYY-MM-DD-HHMM>/authorities_dump.json`
+* `./dumps/<YYYY-MM-DD-HHMM>/customer_dump.json`
 
 ```shell
 ./aptus-dump.py

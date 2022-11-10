@@ -8,6 +8,5 @@ import config
 #
 
 apt = aptus.Aptus(config.APTUS_BASE_URL, config.APTUS_USERNAME, config.APTUS_PASSWORD)
-apt.dump_all_authorities()
-apt.dump_all_customers()
+apt.dump_all()
 apt.quit()

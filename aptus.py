@@ -1,6 +1,8 @@
 import json
 import logging
 import re
+from datetime import datetime
+from pathlib import Path
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -78,7 +80,7 @@ class Aptus:
 
                 return current_url
 
-    def dump_all_authorities(self):
+    def dump_all_authorities(self, dump_dir: Path):
         # Open url to authority index page
         self.open_path('Authority/Index')
 
@@ -110,7 +112,9 @@ class Aptus:
         for authority_data in row_datas:
             authorities.append(self.dump_authority(authority_data.get('id'), authority_data.get('name')))
 
-        with open('authorities_dump.json', 'w', encoding='utf-8') as outfile:
+        authorities_dump_file_path = dump_dir.joinpath("authorities_dump.json")
+
+        with authorities_dump_file_path.open(mode='w', encoding='utf-8') as outfile:
             json_string = json.dumps(authorities, indent=2, ensure_ascii=False)
             outfile.write(json_string)
 
@@ -132,7 +136,7 @@ class Aptus:
             'timezones': timezones
         }
 
-    def dump_all_customers(self):
+    def dump_all_customers(self, dump_dir: Path):
         customers = []
 
         # Loop over customer id's
@@ -141,7 +145,9 @@ class Aptus:
             if customer is not None:
                 customers.append(customer)
 
-        with open('customer_dump.json', 'w', encoding='utf-8') as outfile:
+        customer_dump_file_path = dump_dir.joinpath('customer_dump.json')
+
+        with customer_dump_file_path.open(mode='w', encoding='utf-8') as outfile:
             json_string = json.dumps(customers, indent=2, ensure_ascii=False)
             outfile.write(json_string)
 
@@ -506,3 +512,32 @@ class Aptus:
                     'Unknown value for bool label: {}, expected Ja or Nej'.format(value_trimmed))
         else:
             raise ValueError('row_type must be string or bool')
+
+    #
+    #
+    #
+
+    @staticmethod
+    def create_dump_dir() -> Path:
+        # Get current working directory
+        work_dir_path = Path.cwd()
+
+        # Create dump directory name and path
+        dump_date = datetime.now()
+        dump_dirname = dump_date.strftime("%Y-%m-%d-%H%M")
+        dump_dir_path = work_dir_path.joinpath("dumps").joinpath(dump_dirname)
+
+        # Create dumps directory if not existing
+        if not dump_dir_path.exists():
+            dump_dir_path.mkdir(parents=True)
+
+        # Verify creation
+        if not dump_dir_path.is_dir():
+            raise Exception('Error creating dump directory')
+
+        return dump_dir_path
+
+    def dump_all(self):
+        dump_dir = self.create_dump_dir()
+        self.dump_all_authorities(dump_dir)
+        self.dump_all_customers(dump_dir)
