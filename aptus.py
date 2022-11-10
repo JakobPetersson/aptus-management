@@ -445,7 +445,9 @@ class Aptus:
                                                     value='div.detailsTableDiv > table.detailsTable > tbody > tr')
 
         # Filter out tr element
-        filtered_rows = list(filter(lambda row: row.find_element(by=By.CSS_SELECTOR, value='td > label').get_attribute('for') == name, details_table_rows))
+        filtered_rows = list(
+            filter(lambda row: row.find_element(by=By.CSS_SELECTOR, value='td > label').get_attribute('for') == name,
+                   details_table_rows))
 
         if len(filtered_rows) != 1:
             raise Exception('Could not find expected field in details table')
