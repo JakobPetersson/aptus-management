@@ -23,23 +23,31 @@ Open a [Terminal](#terminal) and enter
 ### Install Python 3
 This should be pre installed on all macs, but you never know. Check by opening a [Terminal](#terminal) and enter
 
-`python3 --version``
+```shell
+python3 --version
+```
 
 If you get a response saying something like *Python 3.x.x* skip to [Selenium](#install-selenium)
 
 If you don't have Python 3 installed, open a [Terminal](#terminal) and enter
 
-`brew install python3`
+```shell
+brew install python3
+```
 
 ### Install Selenium
 Open a [Terminal](#terminal) and enter
 
-`pip3 install selenium`
+```shell
+pip3 install selenium
+```
 
 ### Install Chromedriver
 Open a [Terminal](#terminal) and enter
 
-`brew install chromedriver`
+```shell
+brew install chromedriver
+```
 
 # Aptus Dump
 
