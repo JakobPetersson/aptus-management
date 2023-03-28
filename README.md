@@ -49,6 +49,12 @@ Open a [Terminal](#terminal) and enter
 brew install chromedriver
 ```
 
+How to fix chromedriver quarantine after update:
+
+```shell
+xattr -dr com.apple.quarantine $(readlink -f $(which chromedriver))
+```
+
 # Aptus Dump
 
 Dump all authorities and customers.
