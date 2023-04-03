@@ -85,7 +85,11 @@ if args.action == 'keys':
             print('Aborting!')
             quit()
 
-        apt = aptus.Aptus(config.APTUS_BASE_URL, config.APTUS_USERNAME, config.APTUS_PASSWORD)
+        apt = aptus.Aptus(config.APTUS_BASE_URL,
+                          config.APTUS_USERNAME,
+                          config.APTUS_PASSWORD,
+                          config.APTUS_MIN_CUSTOMER_ID,
+                          config.APTUS_MAX_CUSTOMER_ID)
         apt.update_keys(keys)
         apt.quit()
 else:

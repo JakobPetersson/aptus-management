@@ -10,10 +10,13 @@ from selenium.webdriver.common.by import By
 
 
 class Aptus:
-    def __init__(self, base_url, username, password):
+    def __init__(self, base_url, username, password, min_customer_id, max_customer_id):
         self.base_url = base_url
         self.username = username
         self.password = password
+
+        self.min_customer_id = min_customer_id
+        self.max_customer_id = max_customer_id
 
         # Initialize browser driver
         self.web = webdriver.Chrome()
@@ -140,7 +143,7 @@ class Aptus:
         customers = []
 
         # Loop over customer id's
-        for customer_id in range(0, 600):
+        for customer_id in range(self.min_customer_id, self.max_customer_id):
             customer = self.dump_customer(customer_id)
             if customer is not None:
                 customers.append(customer)
