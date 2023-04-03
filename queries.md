@@ -11,6 +11,13 @@ Get all tags (keys) with codes.
 jq '.[].keys[] | select((.code != "") and (.card != "")) | {id,code}' customer_dump.json | jq -s
 ```
 
+### Keys with duplicate cards
+
+```shell
+jq '.[].keys[] | select((.card != "")) | {id, card}' customer_dump.json | jq -s 'group_by(.card) | map(select(length>1))[] | {card: .[0].card, ids: [.[] | .id]}'
+```
+
+
 ### Customers of format nn-nnn
 
 Get all customers with name nn-nnn.
