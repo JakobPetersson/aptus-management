@@ -507,6 +507,9 @@ class Aptus:
 
         if input_type == 'string':
             return value_trimmed
+        elif input_type == 'link':
+            href = td_element.find_element(by=By.CSS_SELECTOR, value='a').get_attribute('href')
+            return href
         elif input_type == 'bool':
             if value_trimmed == 'Ja':
                 return True
@@ -517,6 +520,64 @@ class Aptus:
                     'Unknown value for bool label: {}, expected Ja or Nej'.format(value_trimmed))
         else:
             raise ValueError('row_type must be string or bool')
+
+    #
+    #
+    #
+
+    def dump_all_agera(self, dump_dir: Path):
+        agera_dump_file_path = dump_dir.joinpath("agera_dump.json")
+
+        agera = {
+            'articles': [],
+            'ageras': [],
+            'templates': [],
+            'areas': [],
+            'article_files': self.dump_all_agera_article_files()
+        }
+
+        with agera_dump_file_path.open(mode='w', encoding='utf-8') as outfile:
+            json_string = json.dumps(agera, indent=2, ensure_ascii=False)
+            outfile.write(json_string)
+
+    def dump_all_agera_article_files(self):
+
+        # Open url directly to Agera ArticleFileIndex page
+        self.open_path('Agera/ArticleFileIndex')
+
+        # Article file table
+        article_file_rows = self.web.find_elements(by=By.CSS_SELECTOR,
+                                                   value='div.listTableDiv > table.listTable > tbody > tr')
+
+        # Remove table header
+        article_file_rows.pop(0)
+
+        article_files = []
+
+        # Loop over article file names
+        for article_file_row in article_file_rows:
+            columns = article_file_row.find_elements(by=By.CSS_SELECTOR, value='td')
+
+            if len(columns) != 4:
+                self.logger.error('Error dumping article file, expected 4 columns in list table')
+                self._abort()
+
+            url = self.convert_parse_string(columns[2], 'link')
+
+            # Get article file id
+            article_file_id = re.search(r".+/Agera/ShowArticleFile/(\d+)", url).group(1)
+
+            print('Article File ID: {}'.format(article_file_id))
+
+            article_files.append({
+                'id': article_file_id,
+                'name': self.convert_parse_string(columns[0], 'string'),
+                'being_used': self.convert_parse_string(columns[1], 'bool'),
+            })
+
+        print('Article Files: {}'.format(len(article_files)))
+
+        return article_files
 
     #
     #
@@ -544,5 +605,6 @@ class Aptus:
 
     def dump_all(self):
         dump_dir = self.create_dump_dir()
+        self.dump_all_agera(dump_dir)
         self.dump_all_authorities(dump_dir)
         self.dump_all_customers(dump_dir)
