@@ -501,14 +501,14 @@ class Aptus:
         self.web.quit()
 
     @staticmethod
-    def convert_parse_string(td_element, input_type):
-        value_raw = td_element.get_attribute('innerHTML')
+    def convert_parse_string(element, input_type):
+        value_raw = element.get_attribute('innerHTML')
         value_trimmed = value_raw.strip()
 
         if input_type == 'string':
             return value_trimmed
         elif input_type == 'link':
-            href = td_element.find_element(by=By.CSS_SELECTOR, value='a').get_attribute('href')
+            href = element.find_element(by=By.CSS_SELECTOR, value='a').get_attribute('href')
             return href
         elif input_type == 'bool':
             if value_trimmed == 'Ja':
