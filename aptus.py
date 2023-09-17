@@ -6,6 +6,7 @@ from pathlib import Path
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver import ChromeOptions
 from selenium.webdriver.common.by import By
 
 
@@ -19,7 +20,9 @@ class Aptus:
         self.max_customer_id = max_customer_id
 
         # Initialize browser driver
-        self.web = webdriver.Chrome()
+        options = ChromeOptions()
+        options.add_argument('--headless=new')
+        self.web = webdriver.Chrome(options=options)
 
         # Implicitly wait maximum 10 seconds for elements
         self.web.implicitly_wait(10)
