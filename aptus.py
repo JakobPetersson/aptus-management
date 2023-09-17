@@ -530,7 +530,7 @@ class Aptus:
 
         agera = {
             'articles': [],
-            'ageras': [],
+            'ageras': self.dump_all_ageras(),
             'templates': [],
             'areas': [],
             'article_files': self.dump_all_agera_article_files()
@@ -539,6 +539,74 @@ class Aptus:
         with agera_dump_file_path.open(mode='w', encoding='utf-8') as outfile:
             json_string = json.dumps(agera, indent=2, ensure_ascii=False)
             outfile.write(json_string)
+
+    def dump_all_ageras(self):
+        # Open url to agera index page
+        self.open_path('Agera/AgeraIndex/')
+
+        # Agera table
+        table_rows = self.web.find_elements(by=By.CSS_SELECTOR,
+                                            value='div.listTableDiv > table.listTable > tbody > tr')
+
+        onclick_attributes = list(map(lambda row: row.get_attribute('onclick'), table_rows))
+        agera_onclick_urls = list(
+            filter(lambda a: a is not None and '/Agera/AgeraDetails/' in a, onclick_attributes))
+        agera_ids = list(
+            map(lambda a: re.search(r"document\.location\.href=\'.+/Agera/AgeraDetails/(\d+)\'", a).group(1),
+                agera_onclick_urls))
+
+        print('Agera: {}'.format(len(agera_ids)))
+
+        agera = []
+
+        # Loop over agera id's
+        for agera_id in agera_ids:
+            agera.append(self.dump_agera(agera_id))
+
+        return agera
+
+    def dump_agera(self, agera_id):
+        # Open url directly to agera details page
+        agera_details_path = 'Agera/AgeraDetails/{id}'.format(id=agera_id)
+        current_url = self.open_path(agera_details_path)
+
+        print('Agera ID: {}'.format(agera_id))
+
+        # Articles table
+        articles_rows = self.web.find_elements(by=By.CSS_SELECTOR,
+                                               value='div.listTableDiv > table.listTable > tbody > tr')
+
+        onclick_attributes = list(map(lambda row: row.get_attribute('onclick'), articles_rows))
+        agera_onclick_urls = list(
+            filter(lambda a: a is not None and '/Agera/ArticleDetails/' in a, onclick_attributes))
+        article_ids = list(
+            map(lambda a: re.search(r"document\.location\.href=\'.+/Agera/ArticleDetails/(\d+)\'", a).group(1),
+                agera_onclick_urls))
+
+        articles = []
+
+        # Loop over article ids
+        for article_id in article_ids:
+            articles.append({
+                'id': article_id
+            })
+
+        # Details table
+        details_table_rows = self.web.find_elements(by=By.CSS_SELECTOR,
+                                                    value='div.detailsTableDiv > table.detailsTable > tbody > tr')
+
+        if len(details_table_rows) != 4:
+            self.logger.error('Error agera, expected 4 rows in details table')
+            self._abort()
+
+        return {
+            'id': agera_id,
+            'lastCall': self.dump_customer_details_row(details_table_rows[0], 'LastCall', 'string'),
+            'mac': self.dump_customer_details_row(details_table_rows[1], 'MAC', 'string'),
+            'address': self.dump_customer_details_row(details_table_rows[2], 'Address', 'string'),
+            'ageraTemplateName': self.dump_customer_details_row(details_table_rows[3], 'AgeraTemplateName', 'string'),
+            'articles': articles
+        }
 
     def dump_all_agera_article_files(self):
 
