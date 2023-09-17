@@ -442,7 +442,7 @@ class Aptus:
 
         return notes
 
-    def get_details_table_row_forName(self, name):
+    def get_details_table_row_for_name(self, name):
         # Details table
         details_table_rows = self.web.find_elements(by=By.CSS_SELECTOR,
                                                     value='div.detailsTableDiv > table.detailsTable > tbody > tr')
@@ -469,7 +469,7 @@ class Aptus:
         # Update code
         code_key = 'code'
         if code_key in key_data:
-            code_tr = self.get_details_table_row_forName('Code')
+            code_tr = self.get_details_table_row_for_name('Code')
             code_input = code_tr.find_element(by=By.CSS_SELECTOR, value='input')
 
             # Update code
