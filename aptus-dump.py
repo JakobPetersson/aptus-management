@@ -7,7 +7,8 @@ import config
 # Dump
 #
 
-apt = aptus.Aptus(config.APTUS_BASE_URL,
+apt = aptus.Aptus(config.BROWSER,
+                  config.APTUS_BASE_URL,
                   config.APTUS_USERNAME,
                   config.APTUS_PASSWORD,
                   config.APTUS_MIN_CUSTOMER_ID,

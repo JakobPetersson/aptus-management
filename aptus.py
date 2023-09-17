@@ -6,12 +6,11 @@ from pathlib import Path
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver import ChromeOptions
 from selenium.webdriver.common.by import By
 
 
 class Aptus:
-    def __init__(self, base_url, username, password, min_customer_id, max_customer_id):
+    def __init__(self, browser, base_url, username, password, min_customer_id, max_customer_id):
         self.base_url = base_url
         self.username = username
         self.password = password
@@ -20,9 +19,17 @@ class Aptus:
         self.max_customer_id = max_customer_id
 
         # Initialize browser driver
-        options = ChromeOptions()
-        options.add_argument('--headless=new')
-        self.web = webdriver.Chrome(options=options)
+        if browser == 'chrome':
+            options = webdriver.ChromeOptions()
+            options.add_argument('--headless=new')
+            self.web = webdriver.Chrome(options=options)
+        elif browser == 'safari':
+            options = webdriver.SafariOptions()
+            self.web = webdriver.Safari(options=options)
+        elif browser == 'firefox':
+            options = webdriver.FirefoxOptions()
+            options.add_argument('-headless')
+            self.web = webdriver.Firefox(options=options)
 
         # Implicitly wait maximum 10 seconds for elements
         self.web.implicitly_wait(10)

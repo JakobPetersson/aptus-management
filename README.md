@@ -42,8 +42,13 @@ Open a [Terminal](#terminal) and enter
 pip3 install selenium
 ```
 
-### Install Chromedriver
-Open a [Terminal](#terminal) and enter
+### Browsers
+
+Configure the browser in the `config.py` file.
+
+#### Chrome
+
+Chrome requires installing `chromedriver`.
 
 ```shell
 brew install chromedriver
@@ -53,6 +58,24 @@ How to fix chromedriver quarantine after update:
 
 ```shell
 xattr -dr com.apple.quarantine $(readlink -f $(which chromedriver))
+```
+
+#### Safari
+
+**NOT WORKING FULLY**
+
+Safari requires enabling the built-in driver.
+
+```shell
+sudo safaridriver --enable
+```
+
+#### Firefox
+
+Firefox does not require any installation other than the browser.
+
+```shell
+brew install geckodriver
 ```
 
 # Aptus Dump
