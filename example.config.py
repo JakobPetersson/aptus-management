@@ -1,3 +1,4 @@
+BROWSER = 'firefox'
 APTUS_BASE_URL = ''
 APTUS_USERNAME = ''
 APTUS_PASSWORD = ''
