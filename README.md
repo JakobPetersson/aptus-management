@@ -1,27 +1,27 @@
 # aptus-management
 
-Tool for automating tasks with Aptus.
+Tool for dumping settings and automating tasks with Aptus.
 
 # Prerequisites
 
 ## What you need for running on MacOS
 
-* Google Chrome
+* Google Chrome / Firefox
 * Homebrew
 * Python 3
 * Selenium
-* Chromedriver
+* Chromedriver / geckodriver
 
-### Install Google Chrome
-Go to [https://www.google.com/chrome/](www.google.com/chrome) and follow the instructions
+### Install homebrew
 
-### Install homebew
-Open a [Terminal](#terminal) and enter
-
-`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
+```shell
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
 
 ### Install Python 3
-This should be pre installed on all macs, but you never know. Check by opening a [Terminal](#terminal) and enter
+This should be pre-installed on all macs, but you never know. 
+
+How to check:
 
 ```shell
 python3 --version
@@ -29,14 +29,13 @@ python3 --version
 
 If you get a response saying something like *Python 3.x.x* skip to [Selenium](#install-selenium)
 
-If you don't have Python 3 installed, open a [Terminal](#terminal) and enter
+If you don't have Python 3 installed:
 
 ```shell
 brew install python3
 ```
 
 ### Install Selenium
-Open a [Terminal](#terminal) and enter
 
 ```shell
 pip3 install selenium
@@ -80,17 +79,20 @@ brew install geckodriver
 
 # Aptus Dump
 
-Dump all authorities and customers.
+Dump all authorities, customers and agera (displays).
 
 Creates the following files:
 * `./dumps/<YYYY-MM-DD-HHMM>/authorities_dump.json`
 * `./dumps/<YYYY-MM-DD-HHMM>/customer_dump.json`
+* `./dumps/<YYYY-MM-DD-HHMM>/agera_dump.json`
 
 ```shell
 ./aptus-dump.py
 ```
 
 # Aptus Manage
+
+Write changes to Aptus. **!EXPERIMENTAL!**
 
 ```shell
 ./aptus-manage.py
