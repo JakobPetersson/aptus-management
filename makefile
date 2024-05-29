@@ -18,3 +18,14 @@ clean:
 dump: venv
 	. venv/bin/activate; ./aptus-dump.py
 
+.PHONY: dump-agera
+dump-agera: venv
+	. venv/bin/activate; ./aptus-dump.py agera
+
+.PHONY: dump-authorities
+dump-authorities: venv
+	. venv/bin/activate; ./aptus-dump.py authorities
+
+.PHONY: dump-customers
+dump-customers: venv
+	. venv/bin/activate; ./aptus-dump.py customers

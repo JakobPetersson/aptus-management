@@ -681,8 +681,13 @@ class Aptus:
 
         return dump_dir_path
 
-    def dump_all(self):
+    def dump_all(self, parts_to_dump):
+        print('Selected to dump: ', parts_to_dump)
         dump_dir = self.create_dump_dir()
-        self.dump_all_agera(dump_dir)
-        self.dump_all_authorities(dump_dir)
-        self.dump_all_customers(dump_dir)
+        for part in parts_to_dump:
+            if part == 'agera':
+                self.dump_all_agera(dump_dir)
+            elif part == 'authorities':
+                self.dump_all_authorities(dump_dir)
+            elif part == 'customers':
+                self.dump_all_customers(dump_dir)
