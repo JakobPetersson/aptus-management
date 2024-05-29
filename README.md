@@ -35,10 +35,10 @@ If you don't have Python 3 installed:
 brew install python3
 ```
 
-### Install Selenium
+### Install python dependencies
 
 ```shell
-pip3 install selenium
+make .venv
 ```
 
 ### Browsers
@@ -87,7 +87,7 @@ Creates the following files:
 * `./dumps/<YYYY-MM-DD-HHMM>/agera_dump.json`
 
 ```shell
-./aptus-dump.py
+make dump
 ```
 
 # Aptus Manage
@@ -95,5 +95,5 @@ Creates the following files:
 Write changes to Aptus. **!EXPERIMENTAL!**
 
 ```shell
-./aptus-manage.py
+# ./aptus-manage.py
 ```

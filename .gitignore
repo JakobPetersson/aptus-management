@@ -2,5 +2,7 @@
 config.py
 dumps
 
+.venv
+
 # Firefox
 geckodriver.log
