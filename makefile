@@ -29,3 +29,7 @@ dump-authorities: venv
 .PHONY: dump-customers
 dump-customers: venv
 	. venv/bin/activate; ./aptus-dump.py customers
+
+.PHONY: dump-bookings
+dump-bookings: venv
+	. venv/bin/activate; ./aptus-dump.py bookings

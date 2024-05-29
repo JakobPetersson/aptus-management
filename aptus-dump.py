@@ -19,7 +19,7 @@ apt = aptus.Aptus(config.BROWSER,
 parts_to_dump = sys.argv[1:]
 if len(parts_to_dump) == 0:
     # Set defaults
-    parts_to_dump = ['agera', 'authorities', 'customers']
+    parts_to_dump = ['agera', 'authorities', 'customers', 'bookings']
 
 apt.dump_all(parts_to_dump)
 apt.quit()

@@ -661,6 +661,21 @@ class Aptus:
     #
     #
 
+    def dump_all_bookings(self, dump_dir: Path):
+        agera_dump_file_path = dump_dir.joinpath("bookings_dump.json")
+
+        bookings = {
+            'bookings': []
+        }
+
+        with agera_dump_file_path.open(mode='w', encoding='utf-8') as outfile:
+            json_string = json.dumps(bookings, indent=2, ensure_ascii=False)
+            outfile.write(json_string)
+
+    #
+    #
+    #
+
     @staticmethod
     def create_dump_dir() -> Path:
         # Get current working directory
@@ -691,3 +706,5 @@ class Aptus:
                 self.dump_all_authorities(dump_dir)
             elif part == 'customers':
                 self.dump_all_customers(dump_dir)
+            elif part == 'bookings':
+                self.dump_all_bookings(dump_dir)
