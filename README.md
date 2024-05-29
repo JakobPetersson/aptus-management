@@ -38,7 +38,7 @@ brew install python3
 ### Install python dependencies
 
 ```shell
-make .venv
+make venv
 ```
 
 ### Browsers
