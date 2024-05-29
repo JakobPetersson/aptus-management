@@ -714,3 +714,4 @@ class Aptus:
                 self.dump_all_customers(dump_dir)
             elif part == 'bookings':
                 self.dump_all_bookings(dump_dir)
+        print('Dump complete!')
