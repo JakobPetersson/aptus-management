@@ -15,7 +15,6 @@ clean:
 #
 
 .PHONY: dump
-dump: .venv
+dump: venv
 	. venv/bin/activate; ./aptus-dump.py
-
 
