@@ -664,6 +664,12 @@ class Aptus:
     def dump_all_bookings(self, dump_dir: Path):
         agera_dump_file_path = dump_dir.joinpath("bookings_dump.json")
 
+        # Get system id's
+        # For each system id
+        #   Get bookingscalendar id's
+        #       For each bookingcalendar id
+        #           Dump the bookingcalendar for a specified time period (start-stop date)
+
         bookings = {
             'bookings': []
         }
